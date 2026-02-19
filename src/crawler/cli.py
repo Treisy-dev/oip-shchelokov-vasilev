@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 
 from .run import run as run_crawler
+from .validate import validate as validate_crawler
+
 
 def _cmd_run(args: argparse.Namespace) -> int:
     """Обработчик подкоманды run: отвечает за запуск процесса краулинга"""
@@ -13,10 +15,13 @@ def _cmd_run(args: argparse.Namespace) -> int:
         limit=args.limit,
     )
 
-def _cmd_validate(_args: argparse.Namespace) -> int:
-    """Обработчик подкоманды validate: выполняет проверку данных и конфигурации (пока без реальной логики)."""
-    print("Not implemented")
-    return 0
+def _cmd_validate(args: argparse.Namespace) -> int:
+    """Обработчик подкоманды validate: выполняет проверку индекса и каталога страниц"""
+    return validate_crawler(
+        pages_dir=Path(args.pages),
+        index_path=Path(args.index),
+        min_pages=args.min_pages,
+    )
 
 
 def _cmd_package(_args: argparse.Namespace) -> int:
@@ -36,18 +41,18 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser = subparsers.add_parser("run", help="запустить основной процесс краулинга")
     run_parser.add_argument(
         "--input",
-        default="urls.txt",
-        help="путь к текстовому файлу со списком URL (по одному адресу на строку, по умолчанию: urls.txt)",
+        default="data/urls.txt",
+        help="путь к текстовому файлу со списком URL (по одному адресу на строку, по умолчанию: data/urls.txt)",
     )
     run_parser.add_argument(
         "--out",
-        default="out",
-        help="каталог для сохранения HTML-страниц (0001.html и далее, по умолчанию: ./out)",
+        default="output/pages",
+        help="каталог для сохранения HTML-страниц (0001.html и далее, по умолчанию: output/pages)",
     )
     run_parser.add_argument(
         "--index",
-        default="index.tsv",
-        help="файл индексной таблицы формата filename<TAB>url (по умолчанию: index.tsv)",
+        default="output/index.txt",
+        help="файл индексной таблицы формата filename<TAB>url (по умолчанию: output/index.txt)",
     )
     run_parser.add_argument(
         "--limit",
@@ -55,7 +60,26 @@ def _build_parser() -> argparse.ArgumentParser:
         default=100,
         help="целевое количество успешных скачиваний (по умолчанию: 100)",
     )
-    subparsers.add_parser("validate", help="проверить конфигурацию/данные")
+    validate_parser = subparsers.add_parser(
+        "validate",
+        help="проверить согласованность индексного файла и каталога страниц",
+    )
+    validate_parser.add_argument(
+        "--pages",
+        default="out",
+        help="каталог, в котором лежат сохранённые HTML-страницы (по умолчанию: ./out)",
+    )
+    validate_parser.add_argument(
+        "--index",
+        default="index.tsv",
+        help="индексный файл формата filename<TAB>url (по умолчанию: index.tsv)",
+    )
+    validate_parser.add_argument(
+        "--min-pages",
+        type=int,
+        default=100,
+        help="ожидаемое минимальное количество файлов в каталоге страниц (по умолчанию: 100)",
+    )
     subparsers.add_parser("package", help="упаковать результат")
 
     return parser
