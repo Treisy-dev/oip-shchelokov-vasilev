@@ -1,12 +1,17 @@
 import argparse
 import sys
+from pathlib import Path
 
+from .run import run as run_crawler
 
-def _cmd_run(_args: argparse.Namespace) -> int:
-    """Обработчик подкоманды run: отвечает за запуск процесса краулинга (реализация ещё не добавлена)."""
-    print("Not implemented")
-    return 0
-
+def _cmd_run(args: argparse.Namespace) -> int:
+    """Обработчик подкоманды run: отвечает за запуск процесса краулинга"""
+    return run_crawler(
+        input_path=Path(args.input),
+        out_dir=Path(args.out),
+        index_path=Path(args.index),
+        limit=args.limit,
+    )
 
 def _cmd_validate(_args: argparse.Namespace) -> int:
     """Обработчик подкоманды validate: выполняет проверку данных и конфигурации (пока без реальной логики)."""
@@ -28,7 +33,28 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True, help="доступные команды")
 
-    subparsers.add_parser("run", help="запустить краулер")
+    run_parser = subparsers.add_parser("run", help="запустить основной процесс краулинга")
+    run_parser.add_argument(
+        "--input",
+        default="urls.txt",
+        help="путь к текстовому файлу со списком URL (по одному адресу на строку, по умолчанию: urls.txt)",
+    )
+    run_parser.add_argument(
+        "--out",
+        default="out",
+        help="каталог для сохранения HTML-страниц (0001.html и далее, по умолчанию: ./out)",
+    )
+    run_parser.add_argument(
+        "--index",
+        default="index.tsv",
+        help="файл индексной таблицы формата filename<TAB>url (по умолчанию: index.tsv)",
+    )
+    run_parser.add_argument(
+        "--limit",
+        type=int,
+        default=100,
+        help="целевое количество успешных скачиваний (по умолчанию: 100)",
+    )
     subparsers.add_parser("validate", help="проверить конфигурацию/данные")
     subparsers.add_parser("package", help="упаковать результат")
 
