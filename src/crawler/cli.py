@@ -14,6 +14,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         out_dir=Path(args.out),
         index_path=Path(args.index),
         limit=args.limit,
+        verbose=args.verbose,
     )
 
 def _cmd_validate(args: argparse.Namespace) -> int:
@@ -62,6 +63,13 @@ def _build_parser() -> argparse.ArgumentParser:
         type=int,
         default=100,
         help="целевое количество успешных скачиваний (по умолчанию: 100)",
+    )
+    run_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        default=True,
+        help="включить подробный вывод хода скачивания в терминал (по умолчанию: включён)",
     )
     validate_parser = subparsers.add_parser(
         "validate",

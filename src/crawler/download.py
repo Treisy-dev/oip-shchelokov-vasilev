@@ -4,6 +4,13 @@ import requests
 from requests.exceptions import HTTPError, RequestException
 
 
+DEFAULT_HEADERS = {
+    "User-Agent": "oip-crawler/1.0 (+https://example.com/contact)",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+}
+
+
 def download_html(url: str, timeout: float, retries: int) -> str:
     """
     Выполняет HTTP-запрос по указанному адресу и возвращает содержимое страницы в виде HTML-строки.
@@ -23,7 +30,7 @@ def download_html(url: str, timeout: float, retries: int) -> str:
 
     for attempt in range(attempts):
         try:
-            response = requests.get(url, timeout=timeout)
+            response = requests.get(url, timeout=timeout, headers=DEFAULT_HEADERS)
             if response.status_code >= 500:
                 last_error = Exception(
                     f"HTTP {response.status_code} at {url} (attempt {attempt + 1}/{attempts})"

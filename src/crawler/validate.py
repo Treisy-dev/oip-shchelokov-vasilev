@@ -74,4 +74,5 @@ def validate(pages_dir: Path, index_path: Path, min_pages: int) -> int:
             )
             return 1
 
+    print("validate: OK")
     return 0

@@ -45,6 +45,7 @@ def package(pages_dir: Path, index_path: Path, out_zip: Path) -> int:
             raise ValueError("Resulting zip file is empty")
 
         tmp_path.replace(out_zip)
+        print(f"package: created archive at {out_zip}")
         return 0
 
     except Exception as e:
