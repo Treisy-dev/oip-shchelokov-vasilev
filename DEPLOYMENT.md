@@ -18,10 +18,12 @@
    ```
 
 3. Активировать его:
-   - macOS/Linux: ```bash
+   - macOS/Linux:
+   ```bash
    source .venv/bin/activate
    ```
-   - Windows: ```bash
+   - Windows:
+   ```bash
    .venv\Scripts\activate
    ```
 
